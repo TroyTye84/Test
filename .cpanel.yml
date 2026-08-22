@@ -1,0 +1,15 @@
+---
+# cPanel Git Version Control deployment manifest.
+#
+# cPanel reads this file from the repository root on the GreenGeeks server and
+# runs the tasks below whenever a deployment is triggered (from the cPanel UI,
+# from scripts/deploy.sh, or from the GitHub Actions workflow).
+#
+# Deliberately a single task: YAML task lists are fiddly and hard to debug
+# through the cPanel log. All real logic lives in deploy/remote-deploy.sh,
+# which you can read, diff and test like any other script.
+#
+# Configure the deployment in deploy/deploy.env -- not here.
+deployment:
+  tasks:
+    - /bin/bash deploy/remote-deploy.sh

@@ -1,0 +1,83 @@
+name: Deploy to GreenGeeks
+
+# Auto-deploy when main moves, plus a manual button in the Actions tab
+# (Run workflow) for redeploys and for deploying a different branch.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch for cPanel to pull and deploy"
+        required: false
+        default: main
+      skip_pull:
+        description: "Redeploy what cPanel already has, without pulling"
+        type: boolean
+        required: false
+        default: false
+
+# Two deploys writing to public_html at once would interleave files.
+# Queue them instead, and never cancel one midway through a file copy.
+concurrency:
+  group: greengeeks-deploy
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate deploy scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check shell syntax
+        run: |
+          for f in scripts/*.sh deploy/*.sh; do
+            bash -n "$f" && echo "ok  $f"
+          done
+
+      - name: Check .cpanel.yml is valid YAML with a deployment task
+        run: |
+          python3 - <<'PY'
+          import yaml, sys
+          doc = yaml.safe_load(open(".cpanel.yml"))
+          tasks = (doc or {}).get("deployment", {}).get("tasks")
+          assert tasks, ".cpanel.yml has no deployment.tasks"
+          print("ok  .cpanel.yml ->", tasks)
+          PY
+
+  deploy:
+    name: Deploy
+    needs: validate
+    runs-on: ubuntu-latest
+    # Optional: create a "production" environment in repo Settings to require
+    # manual approval before a deploy runs.
+    # environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trigger cPanel pull and deploy
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_PORT: ${{ secrets.CPANEL_PORT || '2083' }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_TOKEN: ${{ secrets.CPANEL_TOKEN }}
+          CPANEL_REPO_ROOT: ${{ secrets.CPANEL_REPO_ROOT }}
+          DEPLOY_BRANCH: ${{ inputs.branch || 'main' }}
+        run: |
+          args=(--branch "$DEPLOY_BRANCH")
+          if [ "${{ inputs.skip_pull }}" = "true" ]; then
+            args+=(--no-pull)
+          fi
+          ./scripts/deploy.sh "${args[@]}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### GreenGeeks deploy"
+            echo ""
+            echo "- Branch: \`${{ inputs.branch || 'main' }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Result: **${{ job.status }}**"
+          } >> "$GITHUB_STEP_SUMMARY"

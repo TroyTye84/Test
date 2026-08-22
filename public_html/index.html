@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deployed from Git</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: grid; place-items: center;
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #f6f8f6; color: #1b2b20;
+    }
+    .card {
+      max-width: 34rem; margin: 2rem; padding: 2.5rem;
+      background: #fff; border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+    }
+    h1 { margin: 0 0 .25rem; font-size: 1.6rem; }
+    .ok { color: #1a7f4b; font-weight: 600; }
+    code {
+      background: #eef2ee; padding: .15em .4em;
+      border-radius: 4px; font-size: .9em;
+    }
+    ol { padding-left: 1.2rem; }
+    li { margin: .4rem 0; }
+    footer { margin-top: 1.75rem; font-size: .85rem; opacity: .7; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #121713; color: #e6ece7; }
+      .card { background: #1a211c; box-shadow: none; border: 1px solid #2b352e; }
+      code { background: #232c26; }
+      .ok { color: #5fd394; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>It works.</h1>
+    <p class="ok">This page was published to your GreenGeeks server from Git.</p>
+
+    <p>Anything inside <code>public_html/</code> in the repository is served
+       from your document root. To change this page, edit
+       <code>public_html/index.html</code>, commit, and push.</p>
+
+    <ol>
+      <li>Edit files in <code>public_html/</code></li>
+      <li><code>git commit</code> and <code>git push</code></li>
+      <li>The deploy runs automatically</li>
+    </ol>
+
+    <p>To confirm which commit is live, open
+       <a href="/.deployed-version">/.deployed-version</a>.</p>
+
+    <footer>Replace this file with your real site whenever you're ready.</footer>
+  </main>
+</body>
+</html>

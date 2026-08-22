@@ -1,0 +1,15 @@
+# Folders to guarantee exist on the server after every deploy.
+#
+# One path per line, relative to DEPLOY_PATH (set in deploy/deploy.env).
+# Lines starting with # and blank lines are ignored.
+# Created with `mkdir -p`, so nesting is fine and re-running is harmless.
+#
+# This is the answer to "I want to create folders on the server": add the
+# folder here, commit, push. It exists on the next deploy.
+#
+# Git cannot track an empty directory, so anything listed here that has no
+# files in it will only ever exist because of this list.
+
+assets/uploads
+logs
+tmp
